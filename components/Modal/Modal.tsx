@@ -2,35 +2,51 @@
 
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 
 interface ModalProps {
   children: React.ReactNode;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 export default function Modal({ children, onClose }: ModalProps) {
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+  const router = useRouter();
 
-    document.addEventListener("keydown", handleEsc);
-    document.body.style.overflow = "hidden";
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      router.back();
+    }
+  };
 
-    return () => {
-      document.removeEventListener("keydown", handleEsc);
-      document.body.style.overflow = "auto";
-    };
-  }, [onClose]);
+ useEffect(() => {
+  const handleEsc = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      if (onClose) onClose();
+      else router.back();
+    }
+  };
+
+  document.addEventListener("keydown", handleEsc);
+  document.body.style.overflow = "hidden";
+
+  return () => {
+    document.removeEventListener("keydown", handleEsc);
+    document.body.style.overflow = "auto";
+  };
+}, [onClose, router]);
 
   
-  if (typeof document === "undefined") return null;
+  const modalRoot =
+    typeof window !== "undefined"
+      ? document.getElementById("modal-root")
+      : null;
 
-  const modalRoot = document.getElementById("modal-root");
   if (!modalRoot) return null;
 
   return createPortal(
-    <div onClick={onClose}>
+    <div onClick={handleClose}>
       <div onClick={(e) => e.stopPropagation()}>
         {children}
       </div>

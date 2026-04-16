@@ -1,44 +1,56 @@
 import axios from "axios";
 import type { Note } from "@/types/note";
 
-const BASE_URL = "https://notehub-public.goit.study/api/notes";
+const BASE_URL = "https://notehub-public.goit.study/api";
 
 const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
-const config = {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
+const headers = {
+  Authorization: `Bearer ${token}`,
 };
 
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  const res = await axios.get<Note>(`${BASE_URL}/${id}`, config);
-  return res.data;
-};
-interface FetchNotesResponse {
+export interface FetchNotesResponse {
   notes: Note[];
   totalPages: number;
 }
 
-export const fetchNotes = async (
+export async function fetchNotes(
   page: number,
-  search: string
-): Promise<FetchNotesResponse> => {
-  const res = await axios.get<FetchNotesResponse>(BASE_URL, {
-    ...config,
-    params: { page, perPage: 12, search },
-  });
-  return res.data;
-};
+  search: string = "",
+  tag?: string
+): Promise<FetchNotesResponse> {
+  const params = new URLSearchParams();
 
+  params.append("page", String(page));
+
+  if (search) params.append("search", search);
+  if (tag) params.append("tag", tag);
+
+  const res = await fetch(`${BASE_URL}/notes?${params.toString()}`, {
+    headers,
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch notes");
+  }
+
+  return res.json();
+}
 export const createNote = async (
   note: Omit<Note, "id" | "createdAt" | "updatedAt">
 ): Promise<Note> => {
-  const res = await axios.post<Note>(BASE_URL, note, config);
+  const res = await axios.post<Note>(`${BASE_URL}/notes`, note, {
+    headers,
+  });
+
   return res.data;
 };
 
 export const deleteNote = async (id: string): Promise<Note> => {
-  const res = await axios.delete<Note>(`${BASE_URL}/${id}`, config);
+  const res = await axios.delete<Note>(`${BASE_URL}/notes/${id}`, {
+    headers,
+  });
+
   return res.data;
 };

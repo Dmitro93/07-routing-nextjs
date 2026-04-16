@@ -12,7 +12,11 @@ import NoteForm from "../../components/NoteForm/NoteForm";
 
 import css from "./NotesPage.module.css";
 
-export default function NotesClient() {
+interface Props {
+  tag?: string;
+}
+
+export default function NotesClient({ tag = "" }: Props) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
@@ -23,9 +27,9 @@ export default function NotesClient() {
   }, 400);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", page, search],
-    queryFn: () => fetchNotes(page, search),
-    placeholderData: (prev) => prev,
+    queryKey: ["notes", page, search, tag],
+  queryFn: () => fetchNotes(page, search, tag),
+  placeholderData: (prev) => prev,
   });
 
   const notes = data?.notes ?? [];
