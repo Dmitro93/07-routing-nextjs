@@ -15,7 +15,7 @@ export default async function FilterPage({
 
   await queryClient.prefetchQuery({
     queryKey: ["notes", 1, "", tag],
-    queryFn: () => fetchNotes(1, "", tag),
+    queryFn: () => fetchNotes(1, ""),
   });
 
   return (
