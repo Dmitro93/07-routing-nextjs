@@ -5,11 +5,11 @@ import NotesClient from "../../Notes.client";
 export default async function FilterPage({
   params,
 }: {
-  params: Promise<{ slug: string[] }>;
+  params: { slug: string[] };
 }) {
-  const { slug } = await params;
+  const tagParam = params.slug?.[0];
 
-  const tag = slug?.[0] === "all" ? "" : slug?.[0];
+  const tag = tagParam === "all" ? "" : tagParam;
 
   const queryClient = new QueryClient();
 

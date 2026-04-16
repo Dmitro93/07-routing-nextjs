@@ -27,10 +27,10 @@ export default function NotesClient({ tag = "" }: Props) {
   }, 400);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", page, search, tag],
+  queryKey: ["notes", page, search, tag],
   queryFn: () => fetchNotes(page, search, tag),
   placeholderData: (prev) => prev,
-  });
+});
 
   const notes = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 0;
