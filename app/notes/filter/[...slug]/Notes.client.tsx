@@ -1,71 +1,32 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useDebouncedCallback } from "use-debounce";
-import { fetchNotes } from "@/lib/api";
-import SearchBox from "@/components/SearchBox/SearchBox";
-import NoteList from "@/components/NoteList/NoteList";
-import Pagination from "@/components/Pagination/Pagination";
-import Modal from "@/components/Modal/Modal";
-import NoteForm from "@/components/NoteForm/NoteForm";
+import { fetchNotes } from "@/app/lib/api";
 
-import css from "./NotesPage.module.css";
-
-interface Props {
-  tag?: string;
-}
-
-export default function NotesClient({ tag = "" }: Props) {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const debouncedSearch = useDebouncedCallback((value: string) => {
-    setSearch(value);
-    setPage(1);
-  }, 400);
+export default function NotesClient({ tag }: { tag?: string }) {
+  const page = 1;
+  const search = "";
 
   const { data, isLoading, isError } = useQuery({
-  queryKey: ["notes", page, search, tag],
-  queryFn: () => fetchNotes(page, search),
-  placeholderData: (prev) => prev,
-});
+    queryKey: ["notes", page, search, tag],
+    queryFn: () =>
+      fetchNotes({
+        page,
+        search,
+        tag,
+      }),
+  });
 
-  const notes = data?.notes ?? [];
-  const totalPages = data?.totalPages ?? 0;
+  if (isLoading) return <p>Loading...</p>;
+  if (isError || !data) return <p>Error</p>;
 
   return (
-    <div className={css.app}>
-      <header className={css.toolbar}>
-        <SearchBox onSearch={debouncedSearch} />
-
-        {totalPages > 1 && (
-          <Pagination
-            page={page}
-            totalPages={totalPages}
-            onChange={setPage}
-          />
-        )}
-
-        <button
-          className={css.button}
-          onClick={() => setIsOpen(true)}
-        >
-          Create note +
-        </button>
-      </header>
-
-      {isLoading && <p>Loading...</p>}
-      {isError && <p>Error...</p>}
-
-      {notes.length > 0 && <NoteList notes={notes} />}
-
-      {isOpen && (
-        <Modal onClose={() => setIsOpen(false)}>
-          <NoteForm onClose={() => setIsOpen(false)} />
-        </Modal>
-      )}
+    <div>
+      {data.notes.map((note) => (
+        <div key={note.id}>
+          <h3>{note.title}</h3>
+        </div>
+      ))}
     </div>
   );
 }

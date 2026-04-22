@@ -1,17 +1,14 @@
-export default function Layout({
+export default function FilterLayout({
   children,
   sidebar,
-  modal,
 }: {
   children: React.ReactNode;
-  sidebar?: React.ReactNode;
-  modal?: React.ReactNode;
+  sidebar: React.ReactNode;
 }) {
   return (
-    <div>
-      {children}
-      {sidebar}
-      {modal}
+    <div style={{ display: "flex", gap: "24px" }}>
+      <aside>{sidebar}</aside>
+      <main>{children}</main>
     </div>
   );
 }

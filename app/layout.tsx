@@ -22,22 +22,21 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+  modal,
+}: {
   children: React.ReactNode;
-}>) {
+  modal: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      
-      <body>
-      <TanStackProvider>
-      
-        <Header />
-        {children}
-        <Footer />
-        
-      </TanStackProvider>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <TanStackProvider>
+          <Header />
+          {children}
+          <Footer />
+          {modal}
+        </TanStackProvider>
       </body>
-      
     </html>
   );
 }

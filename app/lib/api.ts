@@ -1,56 +1,50 @@
 import axios from "axios";
 import type { Note } from "@/types/note";
 
-const BASE_URL = "https://notehub-public.goit.study/api";
+const BASE_URL = "https://notehub-public.goit.study/api/notes";
 
 const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN;
 
-const headers = {
-  Authorization: `Bearer ${token}`,
-};
+const instance = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
 
-export interface FetchNotesResponse {
+export interface FetchNotesParams {
+  page?: number;
+  search?: string;
+  tag?: string;
+}
+
+export interface NotesResponse {
   notes: Note[];
   totalPages: number;
 }
 
-export async function fetchNotes(
-  page: number,
-  search: string = "",
-  tag?: string
-): Promise<FetchNotesResponse> {
-  const params = new URLSearchParams();
+export const fetchNotes = async (
+  params: FetchNotesParams = {}
+): Promise<NotesResponse> => {
+  const { page = 1, search = "", tag } = params;
 
-  params.append("page", String(page));
+  const query: Record<string, string | number> = {
+    page,
+    search,
+  };
 
-  if (search) params.append("search", search);
-  if (tag) params.append("tag", tag);
-
-  const res = await fetch(`${BASE_URL}/notes?${params.toString()}`, {
-    headers,
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch notes");
+  if (tag) {
+    query.tag = tag;
   }
 
-  return res.json();
-}
-export const createNote = async (
-  note: Omit<Note, "id" | "createdAt" | "updatedAt">
-): Promise<Note> => {
-  const res = await axios.post<Note>(`${BASE_URL}/notes`, note, {
-    headers,
+  const res = await instance.get<NotesResponse>("", {
+    params: query,
   });
 
   return res.data;
 };
 
-export const deleteNote = async (id: string): Promise<Note> => {
-  const res = await axios.delete<Note>(`${BASE_URL}/notes/${id}`, {
-    headers,
-  });
-
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const res = await instance.get<Note>(`/${id}`);
   return res.data;
 };
