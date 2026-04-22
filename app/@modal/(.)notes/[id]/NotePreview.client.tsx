@@ -11,6 +11,7 @@ export default function NotePreview({ id }: { id: string }) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
+    refetchOnMount: false,
   });
 
   if (isLoading) return <p>Loading...</p>;

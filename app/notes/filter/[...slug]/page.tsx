@@ -9,9 +9,11 @@ import NotesClient from "./Notes.client";
 export default async function FilterPage({
   params,
 }: {
-  params: { slug: string[] };
+  params: Promise<{ slug: string[] }>;
 }) {
-  const tag = params.slug?.[0];
+  const { slug } = await params;
+
+  const tag = slug?.[0];
   const normalizedTag = tag === "all" ? undefined : tag;
 
   const queryClient = new QueryClient();
