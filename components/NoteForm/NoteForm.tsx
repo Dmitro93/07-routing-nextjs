@@ -24,12 +24,12 @@ export default function NoteForm({ onClose }: NoteFormProps) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-      onClose();
-    },
-  });
+  mutationFn: (data: FormValues) => createNote(data),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ["notes"] });
+    onClose();
+  },
+});
 
   return (
     <Formik<FormValues>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { fetchNotes } from "@/app/lib/api";
+import { fetchNotes } from "@/lib/api";
 
 export default function NotesClient({ tag }: { tag?: string }) {
   const page = 1;

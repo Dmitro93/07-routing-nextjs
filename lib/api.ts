@@ -48,3 +48,19 @@ export const fetchNoteById = async (id: string): Promise<Note> => {
   const res = await instance.get<Note>(`/${id}`);
   return res.data;
 };
+
+export interface CreateNoteData {
+  title: string;
+  content: string;
+  tag: string;
+}
+
+export const createNote = async (data: CreateNoteData): Promise<Note> => {
+  const res = await instance.post<Note>("", data);
+  return res.data;
+};
+
+export const deleteNote = async (id: string): Promise<Note> => {
+  const res = await instance.delete<Note>(`/${id}`);
+  return res.data;
+};
